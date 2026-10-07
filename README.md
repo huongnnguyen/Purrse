@@ -3,7 +3,7 @@
 A private, web-based personal finance tracker — built from scratch to learn full-stack development (Spring Boot + PostgreSQL + React), with the eventual goal of an intelligent, permission-based allocation system for savings goals.
 
 ## Stack
-- **Frontend:** React (not started yet)
+- **Frontend:** Single static page (vanilla JS) served by Spring Boot — no separate build step (React is still a possible later upgrade)
 - **Backend:** Java 25 / Spring Boot 4.1.1, Gradle
 - **Database:** PostgreSQL 18
 
@@ -39,18 +39,37 @@ Seeded with test data (1 user, 1 checking account, 10 transactions mixing income
 - Total spend by category
 - Income vs. expenses
 
-## Not Started Yet
-- **Phase 2:** JPA entities + repositories, connecting Spring Boot to `purrse_dev`
-- **Phase 3–4:** REST API (CRUD + dashboard aggregation endpoints)
-- **Phase 5+:** React frontend
-- Eventually: recurring payments, goal-based allocation engine, bank sync (Plaid), forecasting/simulations
+## Phase 2–5 — API + Tracker UI ✅ (needs a first run on your machine)
+- JPA entities for `users`, `accounts`, `transactions`, `goals`, mapped onto the hand-written tables
+- REST API under `/api`: `dashboard`, `accounts`, `transactions`, `goals` (+ `goals/{id}/contribute`)
+- Adding/deleting a transaction updates the account balance (and refuses to take it below $0, matching the DB check constraint)
+- Tracker page at `http://localhost:8080`: balances, income/expenses, spending by category, transactions, savings goals
+- `start-purrse.bat` starts the backend and opens the tracker in its own window
 
-## Running the Backend
+## Not Started Yet
+- React frontend (if you still want it)
+- Recurring payments, goal-based allocation engine, bank sync (Plaid), forecasting/simulations
+
+## Running It (Windows)
+1. Make sure PostgreSQL is running and `purrse_dev` exists.
+2. If your `postgres` user has a password: `set PURRSE_DB_PASSWORD=yourpassword`, or create `backend/application-local.properties` containing `spring.datasource.password=yourpassword` (it's gitignored).
+3. Double-click `start-purrse.bat` (first run downloads dependencies, so give it a minute).
+
+Or manually:
 ```bash
 cd backend
 ./gradlew bootRun
 ```
-Runs on `localhost:8080`.
+then open `http://localhost:8080`.
+
+Transactions with `type = 'income'` count as income; any other type is treated as an expense.
+
+## Tests
+```bash
+cd backend
+./gradlew test
+```
+Tests run against an in-memory H2 database, not your `purrse_dev`.
 
 ## Database Setup
 ```bash
